@@ -60,16 +60,6 @@ KrishiMitra-2.0/
 └── tsconfig.json     # TypeScript configuration
 ```
 
-## 🧪 Testing
-
-```bash
-# Run tests
-pnpm test
-
-# Run linting
-pnpm lint
-```
-
 ## 🚀 Deployment
 
 The application is automatically deployed to Vercel on changes to the main branch.
