@@ -74,7 +74,7 @@ pnpm lint
 
 The application is automatically deployed to Vercel on changes to the main branch.
 
-Live demo: [https://v0-krishimitra-ui-design.vercel.app](https://v0-krishimitra-ui-design.vercel.app)
+Live demo: [https://krishi-mitra-2-0.vercel.app/](https://krishi-mitra-2-0.vercel.app/)
 
 ## 🤝 Contributing
 
