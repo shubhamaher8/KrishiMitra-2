@@ -51,10 +51,38 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="text-sm font-semibold">AI Features</h3>
             <ul className="space-y-2 text-sm">
-              <li className="text-muted-foreground">Crop Recommendations</li>
-              <li className="text-muted-foreground">Price Predictions</li>
-              <li className="text-muted-foreground">Disease Detection</li>
-              <li className="text-muted-foreground">Weather Analysis</li>
+              <li>
+                <Link
+                  href="/dashboard?tab=crop-recommendations"
+                  className="text-muted-foreground hover:text-accent transition-colors cursor-pointer"
+                >
+                  Crop Recommendations
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/dashboard?tab=price-predictions"
+                  className="text-muted-foreground hover:text-accent transition-colors cursor-pointer"
+                >
+                  Price Predictions
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/dashboard?tab=disease-detection"
+                  className="text-muted-foreground hover:text-accent transition-colors cursor-pointer"
+                >
+                  Disease Detection
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/explore"
+                  className="text-muted-foreground hover:text-accent transition-colors cursor-pointer"
+                >
+                  Weather Analysis
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -62,17 +90,31 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="text-sm font-semibold">Contact</h3>
             <ul className="space-y-2 text-sm">
-              <li className="flex items-center space-x-2 text-muted-foreground">
-                <Mail className="h-4 w-4" />
-                <span>support@krishimitra.com</span>
+              <li className="flex items-center space-x-2">
+                <Mail className="h-4 w-4 text-muted-foreground" />
+                <a
+                  href="mailto:support@krishimitra.com"
+                  className="text-muted-foreground hover:text-accent transition-colors"
+                >
+                  support@krishimitra.com
+                </a>
               </li>
-              <li className="flex items-center space-x-2 text-muted-foreground">
-                <Phone className="h-4 w-4" />
-                <span>+91 98765 43210</span>
+              <li className="flex items-center space-x-2">
+                <Phone className="h-4 w-4 text-muted-foreground" />
+                <a href="tel:+919876543210" className="text-muted-foreground hover:text-accent transition-colors">
+                  +91 98765 43210
+                </a>
               </li>
-              <li className="flex items-center space-x-2 text-muted-foreground">
-                <MapPin className="h-4 w-4" />
-                <span>New Delhi, India</span>
+              <li className="flex items-center space-x-2">
+                <MapPin className="h-4 w-4 text-muted-foreground" />
+                <a
+                  href="https://maps.google.com/?q=New+Delhi,+India"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-accent transition-colors"
+                >
+                  New Delhi, India
+                </a>
               </li>
             </ul>
           </div>

@@ -146,7 +146,7 @@ export default function HomePage() {
                   </ul>
                   <Button
                     variant="outline"
-                    className="w-full bg-transparent hover:bg-accent/10 border-accent/30 hover:border-accent transition-all duration-300 transform hover:scale-105"
+                    className="w-full bg-black text-white hover:bg-gray-800 border-black hover:border-gray-800 transition-all duration-300 transform hover:scale-105"
                   >
                     Learn More
                   </Button>
@@ -191,7 +191,7 @@ export default function HomePage() {
                   </ul>
                   <Button
                     variant="outline"
-                    className="w-full bg-transparent hover:bg-accent-blue/10 border-accent-blue/30 hover:border-accent-blue transition-all duration-300 transform hover:scale-105"
+                    className="w-full bg-black text-white hover:bg-gray-800 border-black hover:border-gray-800 transition-all duration-300 transform hover:scale-105"
                   >
                     Learn More
                   </Button>
@@ -236,7 +236,7 @@ export default function HomePage() {
                   </ul>
                   <Button
                     variant="outline"
-                    className="w-full bg-transparent hover:bg-accent/10 border-accent/30 hover:border-accent transition-all duration-300 transform hover:scale-105"
+                    className="w-full bg-black text-white hover:bg-gray-800 border-black hover:border-gray-800 transition-all duration-300 transform hover:scale-105"
                   >
                     Learn More
                   </Button>

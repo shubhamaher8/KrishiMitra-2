@@ -12,7 +12,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import { Mail, Phone, MapPin, Clock, Send, MessageSquare, HeadphonesIcon, Globe, ArrowRight } from "lucide-react"
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Clock,
+  Send,
+  MessageSquare,
+  HeadphonesIcon,
+  Globe,
+  ArrowRight,
+  Sprout,
+  Sun,
+  Droplets,
+  Wind,
+  Leaf,
+} from "lucide-react"
 
 export default function ContactPage() {
   const [isLoading, setIsLoading] = useState(false)
@@ -64,6 +79,7 @@ export default function ContactPage() {
       title: "Call Us",
       details: "+91 98765 43210",
       description: "Mon-Fri from 9am to 6pm",
+      href: "tel:+919876543210",
     },
     {
       icon: MapPin,
@@ -98,7 +114,62 @@ export default function ContactPage() {
   ]
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative overflow-hidden">
+      <div className="absolute inset-0 -z-10">
+        {/* Floating farming elements */}
+        <div className="absolute top-20 left-10 w-8 h-8 text-green-500/30 animate-float">
+          <Sprout className="w-full h-full" />
+        </div>
+        <div
+          className="absolute top-40 right-20 w-6 h-6 text-yellow-400/40 animate-float"
+          style={{ animationDelay: "1s" }}
+        >
+          <Sun className="w-full h-full" />
+        </div>
+        <div
+          className="absolute top-60 left-1/4 w-5 h-5 text-blue-400/30 animate-float"
+          style={{ animationDelay: "2s" }}
+        >
+          <Droplets className="w-full h-full" />
+        </div>
+        <div
+          className="absolute bottom-40 right-1/3 w-7 h-7 text-green-400/25 animate-float"
+          style={{ animationDelay: "0.5s" }}
+        >
+          <Wind className="w-full h-full" />
+        </div>
+        <div className="absolute bottom-20 left-10 w-10 h-10 text-green-600/20 animate-grow">
+          <Leaf className="w-full h-full" />
+        </div>
+
+        {/* Additional farming animations */}
+        <div
+          className="absolute top-1/3 left-1/2 w-6 h-6 text-green-500/25 animate-bounce"
+          style={{ animationDelay: "3s" }}
+        >
+          <Sprout className="w-full h-full" />
+        </div>
+        <div
+          className="absolute bottom-1/3 right-10 w-8 h-8 text-yellow-500/30 animate-pulse"
+          style={{ animationDelay: "1.5s" }}
+        >
+          <Sun className="w-full h-full" />
+        </div>
+        <div
+          className="absolute top-1/2 right-1/4 w-4 h-4 text-blue-500/35 animate-ping"
+          style={{ animationDelay: "2.5s" }}
+        >
+          <Droplets className="w-full h-full" />
+        </div>
+
+        {/* Animated background gradients */}
+        <div className="absolute top-0 left-0 w-full h-full">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-green-500/5 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-green-400/3 rounded-full blur-2xl animate-float"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-green-500/3 to-green-400/3 rounded-full blur-3xl animate-spin-slow"></div>
+        </div>
+      </div>
+
       <Header />
 
       <main className="flex-1">
@@ -111,7 +182,11 @@ export default function ContactPage() {
               </Badge>
               <h1 className="text-4xl lg:text-6xl font-bold tracking-tight mb-6">
                 We're Here to
-                <span className="block text-accent">Help You</span>
+                <span className="block">
+                  <span className="bg-gradient-to-r from-green-500 to-green-400 bg-clip-text text-transparent">
+                    Help You
+                  </span>
+                </span>
               </h1>
               <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
                 Have questions about KrishiMitra 2.0? Need technical support? Want to partner with us? We'd love to hear
@@ -136,7 +211,15 @@ export default function ContactPage() {
                       <info.icon className="h-8 w-8 text-accent" />
                     </div>
                     <h3 className="text-lg font-semibold mb-2">{info.title}</h3>
-                    <p className="text-accent font-medium mb-1">{info.details}</p>
+                    <p className="text-accent font-medium mb-1">
+                      {info.href ? (
+                        <a href={info.href} className="hover:underline">
+                          {info.details}
+                        </a>
+                      ) : (
+                        info.details
+                      )}
+                    </p>
                     <p className="text-sm text-muted-foreground">{info.description}</p>
                   </CardContent>
                 </Card>
@@ -299,7 +382,12 @@ export default function ContactPage() {
                             <h3 className="font-semibold mb-1">Frequently Asked Questions</h3>
                             <p className="text-sm text-muted-foreground">Find quick answers to common questions</p>
                           </div>
-                          <Button variant="outline" size="sm">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="hover:bg-black hover:text-white transition-colors duration-200 bg-transparent"
+                            onClick={() => (window.location.href = "/faq")}
+                          >
                             View FAQ
                             <ArrowRight className="ml-2 h-4 w-4" />
                           </Button>
@@ -380,16 +468,70 @@ export default function ContactPage() {
                         <Phone className="h-5 w-5 text-accent mt-0.5 flex-shrink-0" />
                         <div>
                           <p className="font-medium">Phone</p>
-                          <p className="text-sm text-muted-foreground">+91 98765 43210</p>
+                          <a
+                            href="tel:+919876543210"
+                            className="text-sm text-muted-foreground hover:text-accent transition-colors"
+                          >
+                            +91 98765 43210
+                          </a>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className="bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center p-8">
-                    <div className="text-center">
-                      <MapPin className="h-16 w-16 text-accent mx-auto mb-4" />
-                      <p className="text-sm text-muted-foreground">Interactive Map</p>
-                      <p className="text-xs text-muted-foreground mt-1">Coming Soon</p>
+
+                  {/* iOS-style map mockup */}
+                  <div className="bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center p-8 relative overflow-hidden">
+                    {/* iOS Map Style Background */}
+                    <div className="absolute inset-0 opacity-20">
+                      <svg viewBox="0 0 400 300" className="w-full h-full">
+                        {/* Roads */}
+                        <path
+                          d="M0,150 Q100,100 200,150 T400,150"
+                          stroke="#22c55e"
+                          strokeWidth="3"
+                          fill="none"
+                          opacity="0.6"
+                        />
+                        <path
+                          d="M200,0 Q150,100 200,200 T200,300"
+                          stroke="#22c55e"
+                          strokeWidth="2"
+                          fill="none"
+                          opacity="0.4"
+                        />
+                        <path d="M0,100 L400,100" stroke="#e5e7eb" strokeWidth="1" opacity="0.3" />
+                        <path d="M0,200 L400,200" stroke="#e5e7eb" strokeWidth="1" opacity="0.3" />
+
+                        {/* Buildings/Areas */}
+                        <rect x="50" y="80" width="60" height="40" fill="#f3f4f6" opacity="0.5" rx="4" />
+                        <rect x="150" y="120" width="80" height="60" fill="#f3f4f6" opacity="0.5" rx="4" />
+                        <rect x="280" y="90" width="70" height="50" fill="#f3f4f6" opacity="0.5" rx="4" />
+
+                        {/* Green spaces */}
+                        <circle cx="100" cy="200" r="25" fill="#22c55e" opacity="0.3" />
+                        <circle cx="320" cy="180" r="30" fill="#22c55e" opacity="0.3" />
+                      </svg>
+                    </div>
+
+                    {/* Center Pin */}
+                    <div className="relative z-10 text-center">
+                      <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-2 shadow-lg">
+                        <MapPin className="h-6 w-6 text-white" />
+                      </div>
+                      <div className="bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-md">
+                        <p className="text-xs font-medium text-gray-800">KrishiMitra HQ</p>
+                        <p className="text-xs text-gray-600">Noida, UP</p>
+                      </div>
+                    </div>
+
+                    {/* iOS-style controls */}
+                    <div className="absolute top-4 right-4 flex flex-col space-y-2">
+                      <div className="w-8 h-8 bg-white/80 backdrop-blur-sm rounded-lg flex items-center justify-center shadow-sm">
+                        <span className="text-xs font-bold text-gray-600">+</span>
+                      </div>
+                      <div className="w-8 h-8 bg-white/80 backdrop-blur-sm rounded-lg flex items-center justify-center shadow-sm">
+                        <span className="text-xs font-bold text-gray-600">-</span>
+                      </div>
                     </div>
                   </div>
                 </div>
