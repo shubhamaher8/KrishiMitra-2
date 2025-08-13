@@ -9,26 +9,57 @@ export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-20 left-10 w-8 h-8 text-accent/20 animate-float">
+        {/* Floating farming elements */}
+        <div className="absolute top-20 left-10 w-8 h-8 text-green-500/30 animate-float">
           <Sprout className="w-full h-full" />
         </div>
         <div
-          className="absolute top-40 right-20 w-6 h-6 text-accent-blue/20 animate-float"
+          className="absolute top-40 right-20 w-6 h-6 text-yellow-400/40 animate-float"
           style={{ animationDelay: "1s" }}
         >
           <Sun className="w-full h-full" />
         </div>
-        <div className="absolute top-60 left-1/4 w-5 h-5 text-accent/15 animate-float" style={{ animationDelay: "2s" }}>
+        <div
+          className="absolute top-60 left-1/4 w-5 h-5 text-blue-400/30 animate-float"
+          style={{ animationDelay: "2s" }}
+        >
           <Droplets className="w-full h-full" />
         </div>
         <div
-          className="absolute bottom-40 right-1/3 w-7 h-7 text-accent-blue/15 animate-float"
+          className="absolute bottom-40 right-1/3 w-7 h-7 text-green-400/25 animate-float"
           style={{ animationDelay: "0.5s" }}
         >
           <Wind className="w-full h-full" />
         </div>
-        <div className="absolute bottom-20 left-10 w-10 h-10 text-accent/10 animate-grow">
+        <div className="absolute bottom-20 left-10 w-10 h-10 text-green-600/20 animate-grow">
           <Leaf className="w-full h-full" />
+        </div>
+
+        {/* Additional farming animations */}
+        <div
+          className="absolute top-1/3 left-1/2 w-6 h-6 text-green-500/25 animate-bounce"
+          style={{ animationDelay: "3s" }}
+        >
+          <Sprout className="w-full h-full" />
+        </div>
+        <div
+          className="absolute bottom-1/3 right-10 w-8 h-8 text-yellow-500/30 animate-pulse"
+          style={{ animationDelay: "1.5s" }}
+        >
+          <Sun className="w-full h-full" />
+        </div>
+        <div
+          className="absolute top-1/2 right-1/4 w-4 h-4 text-blue-500/35 animate-ping"
+          style={{ animationDelay: "2.5s" }}
+        >
+          <Droplets className="w-full h-full" />
+        </div>
+
+        {/* Animated background gradients */}
+        <div className="absolute top-0 left-0 w-full h-full">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-green-500/5 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-green-400/3 rounded-full blur-2xl animate-float"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-green-500/3 to-green-400/3 rounded-full blur-3xl animate-spin-slow"></div>
         </div>
       </div>
 
@@ -41,7 +72,7 @@ export default function HomePage() {
             <div className="max-w-4xl mx-auto text-center animate-fade-in-up">
               <h1 className="text-4xl lg:text-6xl font-bold tracking-tight mb-6">
                 AI-Powered Agriculture
-                <span className="block bg-gradient-to-r from-accent to-accent-blue bg-clip-text text-transparent">
+                <span className="block bg-gradient-to-r from-green-500 to-green-400 bg-clip-text text-transparent">
                   Solutions
                 </span>
               </h1>
@@ -53,7 +84,7 @@ export default function HomePage() {
                 <Button
                   size="lg"
                   asChild
-                  className="text-lg px-8 py-4 bg-gradient-to-r from-accent via-accent-blue to-accent hover:from-accent/90 hover:via-accent-blue/90 hover:to-accent/90 transition-all duration-500 transform hover:scale-105 shadow-xl hover:shadow-2xl border-0 text-white font-semibold"
+                  className="text-lg px-8 py-4 bg-gradient-to-r from-green-500 to-white hover:from-green-600 hover:to-green-50 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl border-0 text-black font-semibold"
                 >
                   <Link href="/register">
                     Get Started Free
@@ -62,21 +93,13 @@ export default function HomePage() {
                 </Button>
                 <Button
                   size="lg"
-                  variant="outline"
                   asChild
-                  className="text-lg px-8 py-4 bg-transparent hover:bg-black hover:text-white border-accent-blue/30 hover:border-black transition-all duration-300 transform hover:scale-105 font-semibold"
+                  className="text-lg px-8 py-4 bg-gradient-to-r from-green-400 to-white hover:from-green-500 hover:to-green-50 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl border-0 text-black font-semibold"
                 >
                   <Link href="/explore">Explore Features</Link>
                 </Button>
               </div>
             </div>
-          </div>
-
-          {/* Enhanced background decoration */}
-          <div className="absolute inset-0 -z-10 overflow-hidden">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-accent/5 to-accent-blue/5 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-accent-blue/3 rounded-full blur-2xl animate-float"></div>
-            <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] bg-accent/3 rounded-full blur-2xl animate-grow"></div>
           </div>
         </section>
 
@@ -305,7 +328,7 @@ export default function HomePage() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 bg-gradient-to-r from-accent/10 to-accent-blue/10">
+        <section className="py-20 bg-gradient-to-r from-green-50 to-green-100">
           <div className="container px-4">
             <div className="max-w-4xl mx-auto text-center animate-fade-in-up">
               <h2 className="text-3xl lg:text-4xl font-bold mb-6">Ready to Transform Your Farming?</h2>
@@ -317,7 +340,7 @@ export default function HomePage() {
                 <Button
                   size="lg"
                   asChild
-                  className="text-lg px-8 py-4 bg-gradient-to-r from-accent via-accent-blue to-accent hover:from-accent/90 hover:via-accent-blue/90 hover:to-accent/90 transition-all duration-500 transform hover:scale-105 shadow-xl hover:shadow-2xl border-0 text-white font-semibold"
+                  className="text-lg px-8 py-4 bg-gradient-to-r from-green-500 to-white hover:from-green-600 hover:to-green-50 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl border-0 text-black font-semibold"
                 >
                   <Link href="/register">
                     Start Free Trial
@@ -326,9 +349,8 @@ export default function HomePage() {
                 </Button>
                 <Button
                   size="lg"
-                  variant="outline"
                   asChild
-                  className="text-lg px-8 py-4 bg-transparent hover:bg-black hover:text-white border-accent-blue/30 hover:border-black transition-all duration-300 transform hover:scale-105 font-semibold"
+                  className="text-lg px-8 py-4 bg-gradient-to-r from-green-400 to-white hover:from-green-500 hover:to-green-50 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl border-0 text-black font-semibold"
                 >
                   <Link href="/contact">Contact Sales</Link>
                 </Button>
