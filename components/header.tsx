@@ -41,12 +41,12 @@ export function Header() {
 
         {/* Desktop Auth Buttons */}
         <div className="hidden md:flex items-center space-x-4">
-          <Button variant="ghost" asChild className="hover:bg-accent/10">
+          <Button asChild className="bg-black text-white hover:bg-gray-800 transition-colors duration-300">
             <Link href="/login">Login</Link>
           </Button>
           <Button
             asChild
-            className="bg-gradient-to-r from-accent to-accent-blue hover:from-accent/90 hover:to-accent-blue/90 shadow-lg hover:shadow-xl transition-all duration-300"
+            className="bg-black text-white hover:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-300"
           >
             <Link href="/register">Get Started</Link>
           </Button>
@@ -73,15 +73,12 @@ export function Header() {
                 </Link>
               ))}
               <div className="flex flex-col space-y-2 pt-4 border-t">
-                <Button variant="ghost" asChild>
+                <Button asChild className="bg-black text-white hover:bg-gray-800">
                   <Link href="/login" onClick={() => setIsOpen(false)}>
                     Login
                   </Link>
                 </Button>
-                <Button
-                  asChild
-                  className="bg-gradient-to-r from-accent to-accent-blue hover:from-accent/90 hover:to-accent-blue/90"
-                >
+                <Button asChild className="bg-black text-white hover:bg-gray-800">
                   <Link href="/register" onClick={() => setIsOpen(false)}>
                     Get Started
                   </Link>

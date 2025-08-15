@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import { Leaf, Eye, EyeOff, ArrowRight, CheckCircle } from "lucide-react"
+import { Leaf, Eye, EyeOff, ArrowRight, CheckCircle, Sprout, Sun, Droplets, Wind } from "lucide-react"
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
@@ -59,7 +59,62 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative overflow-hidden">
+      <div className="absolute inset-0 -z-10">
+        {/* Floating farming elements */}
+        <div className="absolute top-20 left-10 w-8 h-8 text-green-500/30 animate-float">
+          <Sprout className="w-full h-full" />
+        </div>
+        <div
+          className="absolute top-40 right-20 w-6 h-6 text-yellow-400/40 animate-float"
+          style={{ animationDelay: "1s" }}
+        >
+          <Sun className="w-full h-full" />
+        </div>
+        <div
+          className="absolute top-60 left-1/4 w-5 h-5 text-blue-400/30 animate-float"
+          style={{ animationDelay: "2s" }}
+        >
+          <Droplets className="w-full h-full" />
+        </div>
+        <div
+          className="absolute bottom-40 right-1/3 w-7 h-7 text-green-400/25 animate-float"
+          style={{ animationDelay: "0.5s" }}
+        >
+          <Wind className="w-full h-full" />
+        </div>
+        <div className="absolute bottom-20 left-10 w-10 h-10 text-green-600/20 animate-grow">
+          <Leaf className="w-full h-full" />
+        </div>
+
+        {/* Additional farming animations */}
+        <div
+          className="absolute top-1/3 left-1/2 w-6 h-6 text-green-500/25 animate-bounce"
+          style={{ animationDelay: "3s" }}
+        >
+          <Sprout className="w-full h-full" />
+        </div>
+        <div
+          className="absolute bottom-1/3 right-10 w-8 h-8 text-yellow-500/30 animate-pulse"
+          style={{ animationDelay: "1.5s" }}
+        >
+          <Sun className="w-full h-full" />
+        </div>
+        <div
+          className="absolute top-1/2 right-1/4 w-4 h-4 text-blue-500/35 animate-ping"
+          style={{ animationDelay: "2.5s" }}
+        >
+          <Droplets className="w-full h-full" />
+        </div>
+
+        {/* Animated background gradients */}
+        <div className="absolute top-0 left-0 w-full h-full">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-green-500/5 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-green-400/3 rounded-full blur-2xl animate-float"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-green-500/3 to-green-400/3 rounded-full blur-3xl animate-spin-slow"></div>
+        </div>
+      </div>
+
       <Header />
 
       <main className="flex-1 flex items-center justify-center py-12 px-4">
