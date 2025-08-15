@@ -31,7 +31,9 @@ import {
   Leaf,
   DollarSign,
   Target,
+  Sprout,
 } from "lucide-react"
+import Crop_Recommendation from "@/components/get-recommendations"
 
 export default function DashboardPage() {
   const [selectedLocation, setSelectedLocation] = useState("")
@@ -49,17 +51,116 @@ export default function DashboardPage() {
     }
   }
 
+  const handleTakePhoto = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" }, // Use back camera on mobile
+      })
+
+      // Create video element to show camera feed
+      const video = document.createElement("video")
+      video.srcObject = stream
+      video.play()
+
+      // Create canvas to capture photo
+      const canvas = document.createElement("canvas")
+      const context = canvas.getContext("2d")
+
+      // Wait for video to load
+      video.onloadedmetadata = () => {
+        canvas.width = video.videoWidth
+        canvas.height = video.videoHeight
+
+        // Capture frame after 3 seconds (you can modify this)
+        setTimeout(() => {
+          if (context) {
+            context.drawImage(video, 0, 0)
+            const imageDataUrl = canvas.toDataURL("image/jpeg")
+            setUploadedImage(imageDataUrl)
+          }
+
+          // Stop camera stream
+          stream.getTracks().forEach((track) => track.stop())
+        }, 3000)
+      }
+    } catch (error) {
+      console.error("Error accessing camera:", error)
+      // Fallback to file input if camera access fails
+      document.getElementById("image-upload")?.click()
+    }
+  }
+
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative overflow-hidden">
+      <div className="absolute inset-0 -z-10">
+        {/* Floating farming elements */}
+        <div className="absolute top-20 left-10 w-8 h-8 text-green-500/30 animate-float">
+          <Sprout className="w-full h-full" />
+        </div>
+        <div
+          className="absolute top-40 right-20 w-6 h-6 text-yellow-400/40 animate-float"
+          style={{ animationDelay: "1s" }}
+        >
+          <Sun className="w-full h-full" />
+        </div>
+        <div
+          className="absolute top-60 left-1/4 w-5 h-5 text-blue-400/30 animate-float"
+          style={{ animationDelay: "2s" }}
+        >
+          <Droplets className="w-full h-full" />
+        </div>
+        <div
+          className="absolute bottom-40 right-1/3 w-7 h-7 text-green-400/25 animate-float"
+          style={{ animationDelay: "0.5s" }}
+        >
+          <Wind className="w-full h-full" />
+        </div>
+        <div className="absolute bottom-20 left-10 w-10 h-10 text-green-600/20 animate-grow">
+          <Leaf className="w-full h-full" />
+        </div>
+
+        {/* Additional farming animations */}
+        <div
+          className="absolute top-1/3 left-1/2 w-6 h-6 text-green-500/25 animate-bounce"
+          style={{ animationDelay: "3s" }}
+        >
+          <Sprout className="w-full h-full" />
+        </div>
+        <div
+          className="absolute bottom-1/3 right-10 w-8 h-8 text-yellow-500/30 animate-pulse"
+          style={{ animationDelay: "1.5s" }}
+        >
+          <Sun className="w-full h-full" />
+        </div>
+        <div
+          className="absolute top-1/2 right-1/4 w-4 h-4 text-blue-500/35 animate-ping"
+          style={{ animationDelay: "2.5s" }}
+        >
+          <Droplets className="w-full h-full" />
+        </div>
+
+        {/* Animated background gradients */}
+        <div className="absolute top-0 left-0 w-full h-full">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-green-500/5 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-green-400/3 rounded-full blur-2xl animate-float"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-green-500/3 to-green-400/3 rounded-full blur-3xl animate-spin-slow"></div>
+        </div>
+      </div>
+
       <Header />
 
-      <main className="flex-1 bg-muted/30">
+      <main className="flex-1 bg-muted/30 pt-20">
         <div className="container px-4 py-8">
           {/* Welcome Section */}
           <div className="mb-8 animate-fade-in-up">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h1 className="text-3xl font-bold">Welcome back, John!</h1>
+                <h1 className="text-3xl font-bold">
+                  Welcome back,{" "}
+                  <span className="bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent">
+                    John!
+                  </span>
+                </h1>
                 <p className="text-muted-foreground">Here's what's happening with your farm today.</p>
               </div>
               <div className="flex items-center space-x-2 text-sm text-muted-foreground">
@@ -177,121 +278,11 @@ export default function DashboardPage() {
 
             {/* Crop Recommendations Tab */}
             <TabsContent value="recommendations" className="space-y-6">
-              <div className="grid lg:grid-cols-2 gap-6">
+              <div className="grid lg:grid-cols-1 ">
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Get Crop Recommendations</CardTitle>
-                    <CardDescription>Enter your farm details to get AI-powered crop suggestions</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="location">Farm Location</Label>
-                      <Select onValueChange={setSelectedLocation}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select your location" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="punjab">Punjab</SelectItem>
-                          <SelectItem value="haryana">Haryana</SelectItem>
-                          <SelectItem value="uttar-pradesh">Uttar Pradesh</SelectItem>
-                          <SelectItem value="maharashtra">Maharashtra</SelectItem>
-                          <SelectItem value="gujarat">Gujarat</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="season">Season</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select season" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="kharif">Kharif (Monsoon)</SelectItem>
-                          <SelectItem value="rabi">Rabi (Winter)</SelectItem>
-                          <SelectItem value="zaid">Zaid (Summer)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="soil">Soil Type</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select soil type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="alluvial">Alluvial</SelectItem>
-                          <SelectItem value="clay">Clay</SelectItem>
-                          <SelectItem value="sandy">Sandy</SelectItem>
-                          <SelectItem value="loamy">Loamy</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <Button className="w-full">
-                      <Brain className="mr-2 h-4 w-4" />
-                      Get Recommendations
-                    </Button>
-                  </CardContent>
+                  <Crop_Recommendation />
                 </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Recommended Crops</CardTitle>
-                    <CardDescription>Based on your current conditions</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between p-4 bg-accent/10 rounded-lg border border-accent/20">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-accent/20 rounded-full flex items-center justify-center">
-                            <Leaf className="h-5 w-5 text-accent" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold">Wheat (HD-2967)</h3>
-                            <p className="text-sm text-muted-foreground">Winter crop</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <Badge variant="secondary" className="bg-accent/20 text-accent">
-                            95% Match
-                          </Badge>
-                          <p className="text-sm text-muted-foreground mt-1">₹45,000/acre</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
-                            <Leaf className="h-5 w-5 text-muted-foreground" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold">Mustard</h3>
-                            <p className="text-sm text-muted-foreground">Oil seed</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <Badge variant="outline">88% Match</Badge>
-                          <p className="text-sm text-muted-foreground mt-1">₹32,000/acre</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
-                            <Leaf className="h-5 w-5 text-muted-foreground" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold">Barley</h3>
-                            <p className="text-sm text-muted-foreground">Cereal grain</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <Badge variant="outline">82% Match</Badge>
-                          <p className="text-sm text-muted-foreground mt-1">₹28,000/acre</p>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
               </div>
             </TabsContent>
 
@@ -419,11 +410,21 @@ export default function DashboardPage() {
                             <p className="text-xs text-muted-foreground">Supports JPG, PNG up to 10MB</p>
                           </div>
                           <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                            <Button variant="outline" size="sm">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={handleTakePhoto}
+                              className="hover:bg-black hover:text-white hover:border-black transition-all duration-300 bg-transparent"
+                            >
                               <Camera className="mr-2 h-4 w-4" />
                               Take Photo
                             </Button>
-                            <Button variant="outline" size="sm" asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              asChild
+                              className="hover:bg-black hover:text-white hover:border-black transition-all duration-300 bg-transparent"
+                            >
                               <label htmlFor="image-upload" className="cursor-pointer">
                                 <Upload className="mr-2 h-4 w-4" />
                                 Upload Image
