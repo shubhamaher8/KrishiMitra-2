@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -33,6 +33,13 @@ import {
   Target,
   Sprout,
 } from "lucide-react"
+import Crop_Recommendation from "@/components/get-recommendations"
+
+import DiseaseDetection from "@/components/disease-detection"
+
+import RecentActivity from "@/components/Recents";
+import WelcomeSection from "@/components/welcomeSection";
+
 
 export default function DashboardPage() {
   const [selectedLocation, setSelectedLocation] = useState("")
@@ -88,6 +95,16 @@ export default function DashboardPage() {
       document.getElementById("image-upload")?.click()
     }
   }
+  const [weather, setWeather] = useState<any>(null);
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const { latitude, longitude } = pos.coords;
+      const res = await fetch(`/api/weather?lat=${latitude}&lon=${longitude}`);
+      const json = await res.json();
+      if (json.success) setWeather(json.data);
+    });
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden">
@@ -151,7 +168,7 @@ export default function DashboardPage() {
       <main className="flex-1 bg-muted/30 pt-20">
         <div className="container px-4 py-8">
           {/* Welcome Section */}
-          <div className="mb-8 animate-fade-in-up">
+          {/* <div className="mb-8 animate-fade-in-up">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h1 className="text-3xl font-bold">
@@ -169,7 +186,9 @@ export default function DashboardPage() {
                 <span>Dec 13, 2024</span>
               </div>
             </div>
-          </div>
+          </div> */}
+
+          <WelcomeSection />
 
           {/* Quick Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 animate-slide-in-left">
@@ -220,43 +239,50 @@ export default function DashboardPage() {
           </div>
 
           {/* Weather Widget */}
-          <Card className="mb-8 animate-fade-in-up">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Sun className="h-5 w-5 text-accent" />
-                <span>Current Weather</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <div className="text-center">
-                  <Sun className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
-                  <p className="text-2xl font-bold">28°C</p>
-                  <p className="text-sm text-muted-foreground">Sunny</p>
-                </div>
-                <div className="text-center">
-                  <Droplets className="h-6 w-6 text-blue-500 mx-auto mb-2" />
-                  <p className="text-lg font-semibold">65%</p>
-                  <p className="text-sm text-muted-foreground">Humidity</p>
-                </div>
-                <div className="text-center">
-                  <Wind className="h-6 w-6 text-gray-500 mx-auto mb-2" />
-                  <p className="text-lg font-semibold">12 km/h</p>
-                  <p className="text-sm text-muted-foreground">Wind</p>
-                </div>
-                <div className="text-center">
-                  <Thermometer className="h-6 w-6 text-red-500 mx-auto mb-2" />
-                  <p className="text-lg font-semibold">32°C</p>
-                  <p className="text-sm text-muted-foreground">Feels like</p>
-                </div>
-                <div className="text-center">
-                  <Droplets className="h-6 w-6 text-blue-600 mx-auto mb-2" />
-                  <p className="text-lg font-semibold">0%</p>
-                  <p className="text-sm text-muted-foreground">Rain chance</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+         <Card>
+  <CardHeader>
+    <CardTitle className="flex items-center space-x-2">
+      <Sun className="h-5 w-5 text-accent" />
+      <span>Current Weather</span>
+    </CardTitle>
+  </CardHeader>
+  <CardContent>
+    {weather ? (
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div className="text-center">
+          <Sun className="h-8 w-8 text-yellow-500 mx-auto mb-2" />
+          <p className="text-2xl font-bold">{weather.temperature}°C</p>
+          <p className="text-sm text-muted-foreground">Current Temp</p>
+        </div>
+        <div className="text-center">
+          <Droplets className="h-6 w-6 text-blue-500 mx-auto mb-2" />
+          <p className="text-lg font-semibold">—</p>
+          <p className="text-sm text-muted-foreground">Humidity</p>
+        </div>
+        <div className="text-center">
+          <Wind className="h-6 w-6 text-gray-500 mx-auto mb-2" />
+          <p className="text-lg font-semibold">—</p>
+          <p className="text-sm text-muted-foreground">Wind Speed</p>
+        </div>
+        {/* <div className="text-center">
+          <Thermometer className="h-6 w-6 text-red-500 mx-auto mb-2" />
+          <p className="text-lg font-semibold">Feels like</p>
+          <p className="text-sm text-muted-foreground">N/A</p>
+        </div> */}
+        <div className="text-center">
+          <Droplets className="h-6 w-6 text-blue-600 mx-auto mb-2" />
+          <p className="text-lg font-semibold">—</p>
+          <p className="text-sm text-muted-foreground">Rain chance</p>
+        </div>
+      </div>
+    ) : (
+      <p>Loading weather...</p>
+    )} 
+   </CardContent>
+
+   
+</Card>
+
 
           {/* AI Features Tabs */}
           <Tabs defaultValue="recommendations" className="animate-fade-in-up">
@@ -277,121 +303,11 @@ export default function DashboardPage() {
 
             {/* Crop Recommendations Tab */}
             <TabsContent value="recommendations" className="space-y-6">
-              <div className="grid lg:grid-cols-2 gap-6">
+              <div className="grid lg:grid-cols-1 ">
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Get Crop Recommendations</CardTitle>
-                    <CardDescription>Enter your farm details to get AI-powered crop suggestions</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="location">Farm Location</Label>
-                      <Select onValueChange={setSelectedLocation}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select your location" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="punjab">Punjab</SelectItem>
-                          <SelectItem value="haryana">Haryana</SelectItem>
-                          <SelectItem value="uttar-pradesh">Uttar Pradesh</SelectItem>
-                          <SelectItem value="maharashtra">Maharashtra</SelectItem>
-                          <SelectItem value="gujarat">Gujarat</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="season">Season</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select season" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="kharif">Kharif (Monsoon)</SelectItem>
-                          <SelectItem value="rabi">Rabi (Winter)</SelectItem>
-                          <SelectItem value="zaid">Zaid (Summer)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="soil">Soil Type</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select soil type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="alluvial">Alluvial</SelectItem>
-                          <SelectItem value="clay">Clay</SelectItem>
-                          <SelectItem value="sandy">Sandy</SelectItem>
-                          <SelectItem value="loamy">Loamy</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <Button className="w-full">
-                      <Brain className="mr-2 h-4 w-4" />
-                      Get Recommendations
-                    </Button>
-                  </CardContent>
+                  <Crop_Recommendation />
                 </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Recommended Crops</CardTitle>
-                    <CardDescription>Based on your current conditions</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between p-4 bg-accent/10 rounded-lg border border-accent/20">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-accent/20 rounded-full flex items-center justify-center">
-                            <Leaf className="h-5 w-5 text-accent" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold">Wheat (HD-2967)</h3>
-                            <p className="text-sm text-muted-foreground">Winter crop</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <Badge variant="secondary" className="bg-accent/20 text-accent">
-                            95% Match
-                          </Badge>
-                          <p className="text-sm text-muted-foreground mt-1">₹45,000/acre</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
-                            <Leaf className="h-5 w-5 text-muted-foreground" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold">Mustard</h3>
-                            <p className="text-sm text-muted-foreground">Oil seed</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <Badge variant="outline">88% Match</Badge>
-                          <p className="text-sm text-muted-foreground mt-1">₹32,000/acre</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
-                            <Leaf className="h-5 w-5 text-muted-foreground" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold">Barley</h3>
-                            <p className="text-sm text-muted-foreground">Cereal grain</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <Badge variant="outline">82% Match</Badge>
-                          <p className="text-sm text-muted-foreground mt-1">₹28,000/acre</p>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
               </div>
             </TabsContent>
 
@@ -492,188 +408,19 @@ export default function DashboardPage() {
 
             {/* Disease Detection Tab */}
             <TabsContent value="detection" className="space-y-6">
-              <div className="grid lg:grid-cols-2 gap-6">
+              <div className="grid lg:grid-cols-1">
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Upload Crop Image</CardTitle>
-                    <CardDescription>Take or upload a photo of your crop for AI analysis</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="border-2 border-dashed border-accent/20 rounded-lg p-8 text-center">
-                      {uploadedImage ? (
-                        <div className="space-y-4">
-                          <img
-                            src={uploadedImage || "/placeholder.svg"}
-                            alt="Uploaded crop"
-                            className="max-h-48 mx-auto rounded-lg"
-                          />
-                          <Button variant="outline" onClick={() => setUploadedImage(null)}>
-                            Upload Different Image
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="space-y-4">
-                          <Camera className="h-12 w-12 text-accent mx-auto" />
-                          <div>
-                            <p className="text-sm font-medium">Upload crop image</p>
-                            <p className="text-xs text-muted-foreground">Supports JPG, PNG up to 10MB</p>
-                          </div>
-                          <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={handleTakePhoto}
-                              className="hover:bg-black hover:text-white hover:border-black transition-all duration-300 bg-transparent"
-                            >
-                              <Camera className="mr-2 h-4 w-4" />
-                              Take Photo
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              asChild
-                              className="hover:bg-black hover:text-white hover:border-black transition-all duration-300 bg-transparent"
-                            >
-                              <label htmlFor="image-upload" className="cursor-pointer">
-                                <Upload className="mr-2 h-4 w-4" />
-                                Upload Image
-                              </label>
-                            </Button>
-                          </div>
-                          <input
-                            id="image-upload"
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageUpload}
-                            className="hidden"
-                          />
-                        </div>
-                      )}
-                    </div>
-
-                    {uploadedImage && (
-                      <Button className="w-full">
-                        <Shield className="mr-2 h-4 w-4" />
-                        Analyze for Diseases
-                      </Button>
-                    )}
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Disease Analysis Results</CardTitle>
-                    <CardDescription>AI-powered crop health assessment</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between p-3 bg-destructive/10 rounded-lg border border-destructive/20">
-                        <div className="flex items-center space-x-3">
-                          <AlertTriangle className="h-5 w-5 text-destructive" />
-                          <div>
-                            <h4 className="font-medium">Leaf Blight</h4>
-                            <p className="text-sm text-muted-foreground">Fungal infection</p>
-                          </div>
-                        </div>
-                        <Badge variant="destructive">High Risk</Badge>
-                      </div>
-
-                      <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                        <div className="flex items-center space-x-3">
-                          <Clock className="h-5 w-5 text-yellow-600" />
-                          <div>
-                            <h4 className="font-medium">Powdery Mildew</h4>
-                            <p className="text-sm text-muted-foreground">Early stage</p>
-                          </div>
-                        </div>
-                        <Badge className="bg-yellow-100 text-yellow-800">Medium Risk</Badge>
-                      </div>
-
-                      <div className="flex items-center justify-between p-3 bg-accent/10 rounded-lg border border-accent/20">
-                        <div className="flex items-center space-x-3">
-                          <CheckCircle className="h-5 w-5 text-accent" />
-                          <div>
-                            <h4 className="font-medium">Root Health</h4>
-                            <p className="text-sm text-muted-foreground">No issues detected</p>
-                          </div>
-                        </div>
-                        <Badge className="bg-accent/20 text-accent">Healthy</Badge>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3 pt-4 border-t">
-                      <h4 className="font-medium">Treatment Recommendations:</h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex items-start space-x-2">
-                          <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0" />
-                          <p>Apply copper-based fungicide immediately</p>
-                        </div>
-                        <div className="flex items-start space-x-2">
-                          <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0" />
-                          <p>Improve air circulation around plants</p>
-                        </div>
-                        <div className="flex items-start space-x-2">
-                          <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0" />
-                          <p>Reduce watering frequency</p>
-                        </div>
-                        <div className="flex items-start space-x-2">
-                          <div className="w-2 h-2 bg-accent rounded-full mt-2 flex-shrink-0" />
-                          <p>Monitor weekly for progress</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <Button variant="outline" className="w-full bg-transparent">
-                      Get Expert Consultation
-                    </Button>
-                  </CardContent>
+                 <DiseaseDetection />
                 </Card>
               </div>
             </TabsContent>
           </Tabs>
 
           {/* Recent Activity */}
-          <Card className="mt-8 animate-fade-in-up">
-            <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
-              <CardDescription>Your latest farming insights and actions</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center space-x-4 p-3 bg-muted/50 rounded-lg">
-                  <div className="w-10 h-10 bg-accent/20 rounded-full flex items-center justify-center">
-                    <Brain className="h-5 w-5 text-accent" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium">New crop recommendations available</p>
-                    <p className="text-sm text-muted-foreground">Based on updated weather data</p>
-                  </div>
-                  <span className="text-xs text-muted-foreground">2 hours ago</span>
-                </div>
+          <Card >
+          
 
-                <div className="flex items-center space-x-4 p-3 bg-muted/50 rounded-lg">
-                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                    <TrendingUp className="h-5 w-5 text-blue-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium">Wheat prices expected to rise</p>
-                    <p className="text-sm text-muted-foreground">+12% increase predicted for next month</p>
-                  </div>
-                  <span className="text-xs text-muted-foreground">1 day ago</span>
-                </div>
-
-                <div className="flex items-center space-x-4 p-3 bg-muted/50 rounded-lg">
-                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                    <Shield className="h-5 w-5 text-green-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-medium">Disease scan completed</p>
-                    <p className="text-sm text-muted-foreground">No major issues detected in Field A</p>
-                  </div>
-                  <span className="text-xs text-muted-foreground">3 days ago</span>
-                </div>
-              </div>
-            </CardContent>
+            <RecentActivity />
           </Card>
         </div>
       </main>
