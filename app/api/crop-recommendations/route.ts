@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     // Call your FastAPI backend
-    const res = await fetch("http://localhost:8000/predict", {
+    const res = await fetch("http://localhost:8000/predict-crop", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

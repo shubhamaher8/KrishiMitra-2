@@ -157,7 +157,7 @@ export default function Crop_Recommendation() {
           </div>
         </div>
       </main>
-      <Footer />
+     
     </div>
   )
 }
