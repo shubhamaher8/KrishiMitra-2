@@ -11,8 +11,11 @@ import io
 import time
 import json 
 from datetime import datetime
-
-
+import os
+import pandas as pd
+from fastapi import FastAPI, Request
+from fastapi.responses import FileResponse
+import numpy as np
  
 # ==========================
 # Load Crop Recommendation Model
@@ -29,7 +32,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 disease_classes = [
     "Pepper_bell_Bacteria_spot",
     "Pepper_bell_healthy",
-    "Potato_Early_blight",  
+    "Potato_Early_blight",
     "Potato_healthy",
     "Potato_Late_blight",
     "Tomato_Target_Spot",
@@ -286,6 +289,7 @@ app = FastAPI()
 # ==========================
 clients = []
 
+
 async def broadcast_activity(activity: dict):
     """Send activity to all connected clients"""
     for client in clients.copy():
@@ -293,6 +297,7 @@ async def broadcast_activity(activity: dict):
             await client.send_text(json.dumps(activity))
         except:
             clients.remove(client)
+
 
 @app.websocket("/ws/activities")
 async def websocket_activities(websocket: WebSocket):
@@ -309,6 +314,8 @@ async def websocket_activities(websocket: WebSocket):
         # Safely remove websocket if it exists
         if websocket in clients:
             clients.remove(websocket)  
+
+
 # ========================== 
 # Crop Recommendation
 # ==========================
@@ -321,9 +328,10 @@ class CropRequest(BaseModel):
     ph: float
     rainfall: float
 
+
 @app.post("/predict-crop")
 async def predict_crop(data: CropRequest):
-    feature_names = ['N','P','K','temperature','humidity','ph','rainfall']
+    feature_names = ['N', 'P', 'K', 'temperature', 'humidity', 'ph', 'rainfall']
     features = pd.DataFrame([[data.N, data.P, data.K, data.temperature,
                              data.humidity, data.ph, data.rainfall]],
                             columns=feature_names)
@@ -331,7 +339,7 @@ async def predict_crop(data: CropRequest):
     probs = crop_model.predict_proba(scaled)[0]
     classes = metadata["classes"]
     paired = sorted(zip(classes, probs), key=lambda x: x[1], reverse=True)
-    top3 = [{"name": name, "probability": round(prob*100,2)} for name, prob in paired[:3]]
+    top3 = [{"name": name, "probability": round(prob * 100, 2)} for name, prob in paired[:3]]
 
     # Broadcast activity
     activity = {
@@ -340,17 +348,18 @@ async def predict_crop(data: CropRequest):
         "title": "New crop recommendations available",
         "description": f"Top crops: {', '.join([c['name'] for c in top3])}",
         "icon": "Brain",
-        "time": datetime.utcnow().isoformat(), 
+        "time": datetime.utcnow().isoformat(),
     } 
     await broadcast_activity(activity)
 
     return {"success": True, "predictions": top3}
 
+
 # ==========================
 # Plant Disease Detection
 # ==========================
 @app.post("/predict-disease")
-async def predict_disease(file: UploadFile = File(...)):
+async def predict_disease(file: UploadFile=File(...)):
     try:
         contents = await file.read()
         image = Image.open(io.BytesIO(contents)).convert("RGB")
@@ -360,7 +369,7 @@ async def predict_disease(file: UploadFile = File(...)):
             outputs = disease_model(img_t)
             probs = torch.nn.functional.softmax(outputs, dim=1)
 
-        top_prob, top_idx = torch.max(probs,1)
+        top_prob, top_idx = torch.max(probs, 1)
         confidence = float(top_prob.cpu().numpy())
         pred_class = disease_classes[top_idx.item()]
 
@@ -368,7 +377,7 @@ async def predict_disease(file: UploadFile = File(...)):
         if confidence < threshold:
             pred_result = {
                 "class": "No leaf/disease detected",
-                "confidence": round(confidence*100,2),
+                "confidence": round(confidence * 100, 2),
                 "description": "The model is not confident this image contains a diseased leaf.",
                 "treatments": {"Organic Control": [], "Chemical Control": []}
             }
@@ -377,7 +386,7 @@ async def predict_disease(file: UploadFile = File(...)):
                                                  "treatments":{"Organic Control": [], "Chemical Control": []}})
             pred_result = {
                 "class": pred_class,
-                "confidence": round(confidence*100,2),
+                "confidence": round(confidence * 100, 2),
                 "description": info["description"],
                 "treatments": info["treatments"]
             }
@@ -397,3 +406,104 @@ async def predict_disease(file: UploadFile = File(...)):
 
     except Exception as e:
         return {"success": False, "error": str(e)}
+
+
+# Folders
+import os
+import pandas as pd
+import numpy as np
+from fastapi import FastAPI, Request
+from fastapi.responses import FileResponse, JSONResponse
+
+# Folders
+FORECAST_DIR = "enhanced_forecasts02"
+PLOT_DIR = "enhanced_plots02"
+
+
+# ---------------- DAILY FORECAST ----------------
+@app.post("/forecast/daily")
+async def get_daily_forecast(req: Request):
+    data = await req.json()
+    crop = data.get("crop")
+    state = data.get("state")
+    district = data.get("district")
+    selected_date = data.get("date")
+
+    file_name = f"{crop}_{state}_{district}_daily_forecast.csv".replace(" ", "_")
+    file_path = os.path.join(FORECAST_DIR, file_name)
+
+    if not os.path.exists(file_path):
+        return JSONResponse({"success": False, "error": f"No DAILY forecast CSV found for {crop}, {state}, {district}"})
+
+    df = pd.read_csv(file_path)
+    df = df.replace([np.nan, np.inf, -np.inf], None)
+    df['ds'] = pd.to_datetime(df['ds']).dt.strftime('%Y-%m-%d')
+
+    if selected_date:
+        df_date = df[df['ds'] == selected_date]
+        if df_date.empty:
+            return JSONResponse({"success": False, "error": "No data found for selected date"})
+        row = df_date.iloc[0]
+    else:
+        row = df.iloc[-1]  # Latest
+
+    return {
+        "success": True,
+        "date": row['ds'],
+        "predicted": row['yhat'],
+        "lower_bound": row['yhat_lower'],
+        "upper_bound": row['yhat_upper']
+    }
+
+
+# ---------------- WEEKLY FORECAST ----------------
+@app.post("/forecast/weekly")
+async def get_weekly_forecast(req: Request):
+    data = await req.json()
+    crop = data.get("crop")
+    state = data.get("state")
+    district = data.get("district")
+    selected_date = data.get("date")
+
+    file_name = f"{crop}_{state}_{district}_weekly_forecast.csv".replace(" ", "_")
+    file_path = os.path.join(FORECAST_DIR, file_name)
+
+    if not os.path.exists(file_path):
+        return JSONResponse({"success": False, "error": f"No WEEKLY forecast CSV found for {crop}, {state}, {district}"})
+
+    df = pd.read_csv(file_path)
+    df = df.replace([np.nan, np.inf, -np.inf], None)
+    df['ds'] = pd.to_datetime(df['ds']).dt.strftime('%Y-%m-%d')
+
+    if selected_date:
+        df_date = df[df['ds'] == selected_date]
+        if df_date.empty:
+            return JSONResponse({"success": False, "error": "No data found for selected date"})
+        row = df_date.iloc[0]
+    else:
+        row = df.iloc[-1]
+
+    return {
+        "success": True,
+        "date": row['ds'],
+        "predicted": row['yhat'],
+        "lower_bound": row['yhat_lower'],
+        "upper_bound": row['yhat_upper']
+    }
+
+
+# ---------------- INTERACTIVE PLOT ----------------
+@app.post("/plot")
+async def get_plot(req: Request):
+    data = await req.json()
+    crop = data.get("crop")
+    state = data.get("state")
+    district = data.get("district")
+
+    file_name = f"{crop}_{state}_{district}.html".replace(" ", "_")
+    file_path = os.path.join(PLOT_DIR, file_name)
+
+    if not os.path.exists(file_path):
+        return JSONResponse({"success": False, "error": f"No plot found for {crop}, {state}, {district}"})
+
+    return FileResponse(file_path, media_type="text/html")

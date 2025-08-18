@@ -40,6 +40,8 @@ import DiseaseDetection from "@/components/disease-detection"
 import RecentActivity from "@/components/Recents";
 import WelcomeSection from "@/components/welcomeSection";
 
+import PriceForecastTab from "@/components/pricePrediction";
+
 
 export default function DashboardPage() {
   const [selectedLocation, setSelectedLocation] = useState("")
@@ -167,26 +169,7 @@ export default function DashboardPage() {
 
       <main className="flex-1 bg-muted/30 pt-20">
         <div className="container px-4 py-8">
-          {/* Welcome Section */}
-          {/* <div className="mb-8 animate-fade-in-up">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h1 className="text-3xl font-bold">
-                  Welcome back,{" "}
-                  <span className="bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent">
-                    John!
-                  </span>
-                </h1>
-                <p className="text-muted-foreground">Here's what's happening with your farm today.</p>
-              </div>
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                <MapPin className="h-4 w-4" />
-                <span>Punjab, India</span>
-                <Calendar className="h-4 w-4 ml-4" />
-                <span>Dec 13, 2024</span>
-              </div>
-            </div>
-          </div> */}
+          
 
           <WelcomeSection />
 
@@ -264,11 +247,7 @@ export default function DashboardPage() {
           <p className="text-lg font-semibold">—</p>
           <p className="text-sm text-muted-foreground">Wind Speed</p>
         </div>
-        {/* <div className="text-center">
-          <Thermometer className="h-6 w-6 text-red-500 mx-auto mb-2" />
-          <p className="text-lg font-semibold">Feels like</p>
-          <p className="text-sm text-muted-foreground">N/A</p>
-        </div> */}
+        
         <div className="text-center">
           <Droplets className="h-6 w-6 text-blue-600 mx-auto mb-2" />
           <p className="text-lg font-semibold">—</p>
@@ -313,95 +292,12 @@ export default function DashboardPage() {
 
             {/* Price Predictions Tab */}
             <TabsContent value="predictions" className="space-y-6">
-              <div className="grid lg:grid-cols-2 gap-6">
+              <div className="grid lg:grid-cols-1">
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Price Forecast</CardTitle>
-                    <CardDescription>Select a crop to view price predictions</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="crop">Select Crop</Label>
-                      <Select onValueChange={setSelectedCrop}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Choose crop for prediction" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="wheat">Wheat</SelectItem>
-                          <SelectItem value="rice">Rice</SelectItem>
-                          <SelectItem value="corn">Corn</SelectItem>
-                          <SelectItem value="cotton">Cotton</SelectItem>
-                          <SelectItem value="sugarcane">Sugarcane</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="market">Market</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select market" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="local">Local Market</SelectItem>
-                          <SelectItem value="mandi">Mandi</SelectItem>
-                          <SelectItem value="export">Export Market</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <Button className="w-full">
-                      <TrendingUp className="mr-2 h-4 w-4" />
-                      Generate Forecast
-                    </Button>
-                  </CardContent>
-                </Card>
+                 
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Wheat Price Trend</CardTitle>
-                    <CardDescription>6-month price forecast</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="text-center p-4 bg-accent/10 rounded-lg">
-                          <p className="text-sm text-muted-foreground">Current Price</p>
-                          <p className="text-2xl font-bold text-accent">₹2,450</p>
-                          <p className="text-xs text-muted-foreground">per quintal</p>
-                        </div>
-                        <div className="text-center p-4 bg-muted/50 rounded-lg">
-                          <p className="text-sm text-muted-foreground">Predicted (3M)</p>
-                          <p className="text-2xl font-bold">₹2,680</p>
-                          <p className="text-xs text-green-600">+9.4% ↗</p>
-                        </div>
-                      </div>
+                  <PriceForecastTab />
 
-                      <div className="h-48 bg-gradient-to-r from-accent/10 to-accent/5 rounded-lg flex items-center justify-center">
-                        <div className="text-center">
-                          <BarChart3 className="h-12 w-12 text-accent mx-auto mb-2" />
-                          <p className="text-sm text-muted-foreground">Interactive Price Chart</p>
-                          <p className="text-xs text-muted-foreground mt-1">Historical & Predicted Data</p>
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between text-sm">
-                          <span>Market Confidence</span>
-                          <span className="text-accent font-medium">High (85%)</span>
-                        </div>
-                        <Progress value={85} className="h-2" />
-                      </div>
-
-                      <div className="space-y-2">
-                        <h4 className="font-medium">Key Factors:</h4>
-                        <ul className="text-sm text-muted-foreground space-y-1">
-                          <li>• Favorable weather conditions</li>
-                          <li>• Increased export demand</li>
-                          <li>• Government support policies</li>
-                          <li>• Seasonal price patterns</li>
-                        </ul>
-                      </div>
-                    </div>
-                  </CardContent>
                 </Card>
               </div>
             </TabsContent>
