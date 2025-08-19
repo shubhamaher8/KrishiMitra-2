@@ -16,7 +16,25 @@ import pandas as pd
 from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse
 import numpy as np
- 
+from datetime import datetime, timezone
+import os
+import pandas as pd
+import numpy as np
+from fastapi import FastAPI, Request
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+import re
+
+from dotenv import load_dotenv
+
+load_dotenv()  # load .env file
+
+FORECAST_DIR = os.getenv("FORECAST_DIR", "enhanced_forecasts03")
+
+PLOT_DIR = os.getenv("PLOT_DIR", "enhanced_plots03")
+
+PORT = int(os.getenv("PORT", 8000))
+
 # ==========================
 # Load Crop Recommendation Model
 # ==========================
@@ -348,7 +366,7 @@ async def predict_crop(data: CropRequest):
         "title": "New crop recommendations available",
         "description": f"Top crops: {', '.join([c['name'] for c in top3])}",
         "icon": "Brain",
-        "time": datetime.utcnow().isoformat(),
+        "time": datetime.now().isoformat(),
     } 
     await broadcast_activity(activity)
 
@@ -398,7 +416,7 @@ async def predict_disease(file: UploadFile=File(...)):
             "title": f"Disease scan completed: {pred_result['class']}",
             "description": f"Confidence: {pred_result['confidence']}%",
             "icon": "Shield",
-            "time": datetime.utcnow().isoformat()
+            "time": datetime.now().isoformat()
         }
         await broadcast_activity(activity)
 
@@ -407,29 +425,38 @@ async def predict_disease(file: UploadFile=File(...)):
     except Exception as e:
         return {"success": False, "error": str(e)}
 
-
-# Folders
-import os
-import pandas as pd
-import numpy as np
-from fastapi import FastAPI, Request
-from fastapi.responses import FileResponse, JSONResponse
-
-# Folders
-FORECAST_DIR = "enhanced_forecasts02"
-PLOT_DIR = "enhanced_plots02"
-
+ 
+# ----------------------
+# Normalization helper
+# ----------------------
+def normalize_name(name: str) -> str:
+    """
+    Convert crop/state/district names to proper file names:
+    - Keep first letter uppercase, rest lowercase
+    - Replace spaces or non-alphanumeric with underscore
+    """
+    if not name:
+        return ""
+    # Split words by space, capitalize first letter of each word
+    words = re.split(r'\s+', name.strip())
+    words = [w[0].upper() + w[1:].lower() if len(w) > 1 else w.upper() for w in words]
+    # Join with underscore
+    file_name_part = "_".join(words)
+    # Replace any remaining non-alphanumeric/underscore with underscore
+    file_name_part = re.sub(r'[^A-Za-z0-9_]', '_', file_name_part)
+    return file_name_part
+ 
 
 # ---------------- DAILY FORECAST ----------------
 @app.post("/forecast/daily")
 async def get_daily_forecast(req: Request):
     data = await req.json()
-    crop = data.get("crop")
-    state = data.get("state")
-    district = data.get("district")
+    crop = normalize_name(data.get("crop"))
+    state = normalize_name(data.get("state"))
+    district = normalize_name(data.get("district"))
     selected_date = data.get("date")
 
-    file_name = f"{crop}_{state}_{district}_daily_forecast.csv".replace(" ", "_")
+    file_name = f"{crop}_{state}_{district}_daily_forecast.csv"
     file_path = os.path.join(FORECAST_DIR, file_name)
 
     if not os.path.exists(file_path):
@@ -445,27 +472,43 @@ async def get_daily_forecast(req: Request):
             return JSONResponse({"success": False, "error": "No data found for selected date"})
         row = df_date.iloc[0]
     else:
-        row = df.iloc[-1]  # Latest
+        row = df.iloc[-1]  # Latest row
 
+    # Round values
+    predicted = round(row['yhat'], 2)
+    lower = round(row['yhat_lower'], 2)
+    upper = round(row['yhat_upper'], 2)
+
+    # Create activity for recent activity
+    activity = {
+        "id": int(time.time()),
+        "type": "price",
+        "title": f"Daily price prediction: {crop}",
+        "description": f"Predicted: ₹{predicted}, Low: ₹{lower}, High: ₹{upper}",
+        "icon": "TrendingUp",
+        "time": datetime.now().isoformat()
+    }
+    await broadcast_activity(activity)
+
+    # Return rounded values in API response
     return {
         "success": True,
         "date": row['ds'],
-        "predicted": row['yhat'],
-        "lower_bound": row['yhat_lower'],
-        "upper_bound": row['yhat_upper']
+        "predicted": predicted,
+        "lower_bound": lower,
+        "upper_bound": upper
     }
 
 
-# ---------------- WEEKLY FORECAST ----------------
 @app.post("/forecast/weekly")
 async def get_weekly_forecast(req: Request):
     data = await req.json()
-    crop = data.get("crop")
-    state = data.get("state")
-    district = data.get("district")
+    crop = normalize_name(data.get("crop"))
+    state = normalize_name(data.get("state"))
+    district = normalize_name(data.get("district"))
     selected_date = data.get("date")
 
-    file_name = f"{crop}_{state}_{district}_weekly_forecast.csv".replace(" ", "_")
+    file_name = f"{crop}_{state}_{district}_weekly_forecast.csv"
     file_path = os.path.join(FORECAST_DIR, file_name)
 
     if not os.path.exists(file_path):
@@ -481,18 +524,38 @@ async def get_weekly_forecast(req: Request):
             return JSONResponse({"success": False, "error": "No data found for selected date"})
         row = df_date.iloc[0]
     else:
-        row = df.iloc[-1]
+        row = df.iloc[-1]  # Latest row
 
+    # Round values
+    predicted = round(row['yhat'], 2)
+    lower = round(row['yhat_lower'], 2)
+    upper = round(row['yhat_upper'], 2)
+
+    # Create activity for recent activity
+    activity = {
+        "id": int(time.time()),
+        "type": "price",
+        "title": f"Weekly price prediction: {crop}",
+        "description": f"Predicted: ₹{predicted}, Low: ₹{lower}, High: ₹{upper}",
+        "icon": "TrendingUp",
+        "time": datetime.now().isoformat()
+    }
+    await broadcast_activity(activity)
+
+    # Return rounded values in API response too
     return {
         "success": True,
         "date": row['ds'],
-        "predicted": row['yhat'],
-        "lower_bound": row['yhat_lower'],
-        "upper_bound": row['yhat_upper']
+        "predicted": predicted,
+        "lower_bound": lower,
+        "upper_bound": upper
     }
 
 
 # ---------------- INTERACTIVE PLOT ----------------
+app.mount("/plots", StaticFiles(directory=PLOT_DIR), name="plots")
+
+
 @app.post("/plot")
 async def get_plot(req: Request):
     data = await req.json()
@@ -506,4 +569,22 @@ async def get_plot(req: Request):
     if not os.path.exists(file_path):
         return JSONResponse({"success": False, "error": f"No plot found for {crop}, {state}, {district}"})
 
-    return FileResponse(file_path, media_type="text/html")
+    # Return both HTML content (for embedding) and URL (for new tab)
+    with open(file_path, "r", encoding="utf-8") as f:
+        html_content = f.read()
+
+    plot_url = f"http://127.0.0.1:8000/plots/{file_name}"
+
+    return {
+        "success": True,
+        "html": html_content,
+        "url": plot_url
+    }
+
+
+@app.get("/plots/{file_name}")
+async def serve_plot(file_name: str):
+    file_path = os.path.join(PLOT_DIR, file_name)
+    if os.path.exists(file_path):
+        return FileResponse(file_path, media_type="text/html")
+    return JSONResponse({"success": False, "error": "Plot not found"})

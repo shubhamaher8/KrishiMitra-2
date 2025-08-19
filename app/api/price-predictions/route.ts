@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+const URL = process.env.NEXT_PUBLIC_API_URL
+
 
 export async function POST(req: Request) {
   try {
@@ -6,36 +8,37 @@ export async function POST(req: Request) {
     const { type, crop, district, state, date } = body;
 
     let backendUrl = "";
-    if (type === "daily") backendUrl = "http://127.0.0.1:8000/forecast/daily";
-    else if (type === "weekly") backendUrl = "http://127.0.0.1:8000/forecast/weekly";
+    if (type === "daily") backendUrl = `${URL}/forecast/daily`;
+    else if (type === "weekly") backendUrl = `${URL}/forecast/weekly`;
     else return NextResponse.json({ success: false, error: "Invalid type" }, { status: 400 });
 
-    // Fetch forecast
+    // Forecast data
     const response = await fetch(backendUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ crop, district, state, date }),
+      body: JSON.stringify({ crop, state, district, date }),
     });
 
-    if (!response.ok)
+    if (!response.ok) {
       return NextResponse.json({ success: false, error: "Backend request failed" }, { status: response.status });
+    }
 
     const data = await response.json();
 
-    // Fetch plot as blob
-    const plotResponse = await fetch("http://127.0.0.1:8000/plot", {
+    // Fetch plot URL
+    const plotResponse = await fetch(`${URL}/plot`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ crop, district, state }),
+      body: JSON.stringify({ crop, state, district }),
     });
 
-    if (!plotResponse.ok) return NextResponse.json({ ...data, plotUrl: null });
-
-    const plotBlob = await plotResponse.blob();
-    const plotUrl = URL.createObjectURL(plotBlob);
+    let plotUrl: string | null = null;
+    if (plotResponse.ok) {
+      const plotData = await plotResponse.json();
+      plotUrl = plotData.success ? plotData.url : null;
+    }
 
     return NextResponse.json({ ...data, plotUrl });
-
   } catch (err) {
     console.error(err);
     return NextResponse.json({ success: false, error: "Something went wrong" }, { status: 500 });

@@ -21,12 +21,14 @@ export default function RecentActivity() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [highlightId, setHighlightId] = useState<number | null>(null);
   const [, setTick] = useState(0); // for re-rendering every minute
-
+const WS_URL = process.env.NEXT_PUBLIC_WS_URL
+  const API_URL = process.env.NEXT_PUBLIC_API_URL
+  
   // WebSocket connection
   useEffect(() => {
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
     const host = window.location.host;
-    const ws = new WebSocket(`http://localhost:8000/ws/activities`);
+    const ws = new WebSocket(WS_URL);
 
     ws.onmessage = (event) => {
       const newActivity: Activity = JSON.parse(event.data);

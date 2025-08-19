@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+const URL = process.env.NEXT_PUBLIC_API_URL
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
@@ -10,7 +11,7 @@ export async function POST(req: Request) {
     }
 
     // Forward request to FastAPI backend
-    const backendRes = await fetch("http://127.0.0.1:8000/predict-disease", {
+    const backendRes = await fetch(`${URL}/predict-disease`, {
       method: "POST",
       body: formData,
     });

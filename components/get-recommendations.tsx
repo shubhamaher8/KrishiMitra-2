@@ -128,32 +128,46 @@ export default function Crop_Recommendation() {
 
             {/* Recommendations Card */}
             <Card className="shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-xl font-semibold">
-                  Top 3 Recommendations
-                </CardTitle>
-                <CardDescription>
-                  Crop suitability based on input parameters
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {recommendations.length > 0 ? (
-                  <div className="space-y-4">
-                    {recommendations.map((rec, idx) => (
-                      <div
-                        key={idx}
-                        className="p-4 border border-gray-200 rounded-md flex justify-between items-center bg-indigo-50"
-                      >
-                        <span className="text-lg font-medium text-gray-900">{rec.name}</span>
-                        <span className="text-sm font-semibold text-indigo-700">{rec.probability}%</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500">No recommendations to display yet.</p>
-                )}
-              </CardContent>
-            </Card>
+  <CardHeader>
+    <CardTitle className="text-xl font-semibold">
+      Top 3 Recommendations
+    </CardTitle>
+    <CardDescription>
+      Crop suitability based on input parameters
+    </CardDescription>
+  </CardHeader>
+  <CardContent>
+    {recommendations.length > 0 ? (
+      <div className="space-y-4">
+        {recommendations.map((rec, idx) => (
+          <div
+            key={idx}
+            className="group relative p-4 border border-gray-200 rounded-xl bg-gradient-to-r from-green-50 to-indigo-100 hover:shadow-lg transition-all duration-300 flex flex-col"
+          >
+            <div className="flex justify-between items-center">
+              <span className="text-lg font-semibold text-gray-900">{rec.name}</span>
+              <span className="text-sm font-medium text-indigo-700">{rec.probability}%</span>
+            </div>
+            {/* Probability Bar */}
+            <div className="mt-2 h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-indigo-600 rounded-full transition-all duration-500"
+                style={{ width: `${rec.probability}%` }}
+              ></div>
+            </div>
+            {/* Tooltip on hover */}
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 -translate-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gray-900 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap">
+              {rec.name} is {rec.probability}% suitable for your input conditions.
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p className="text-gray-500">No recommendations to display yet.</p>
+    )}
+  </CardContent>
+</Card>
+
           </div>
         </div>
       </main>
